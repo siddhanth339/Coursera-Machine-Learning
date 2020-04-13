@@ -33,20 +33,19 @@ def forward_propagation_with_dropout(X, parameters, keep_prob = 0.5):
     # LINEAR -> RELU -> LINEAR -> RELU -> LINEAR -> SIGMOID
     Z1 = np.dot(W1, X) + b1
     A1 = relu(Z1)
-   # print(A1.shape)
     ### START CODE HERE ### (approx. 4 lines)         # Steps 1-4 below correspond to the Steps 1-4 described above. 
-    D1 = np.random.randn(A1.shape[0],A1.shape[1])     # Step 1: initialize matrix D1 = np.random.rand(..., ...)
-    D1 = (D1<keep_prob).astype(int)                   # Step 2: convert entries of D1 to 0 or 1 (using keep_prob as the threshold)
-    A1 = np.multiply(A1,D1)                                        # Step 3: shut down some neurons of A1
-    A1 /= keep_prob                                 # Step 4: scale the value of neurons that haven't been shut down
+    D1 = np.random.rand(A1.shape[0], A1.shape[1])                                        # Step 1: initialize matrix D1 = np.random.rand(..., ...)
+    D1 = D1 < keep_prob                                         # Step 2: convert entries of D1 to 0 or 1 (using keep_prob as the threshold)
+    A1 = np.multiply(A1, D1)                                         # Step 3: shut down some neurons of A1
+    A1 /= keep_prob                                        # Step 4: scale the value of neurons that haven't been shut down
     ### END CODE HERE ###
     Z2 = np.dot(W2, A1) + b2
     A2 = relu(Z2)
     ### START CODE HERE ### (approx. 4 lines)
-    D2 = np.random.randn(A2.shape[0],A2.shape[1])        # Step 1: initialize matrix D2 = np.random.rand(..., ...)
-    D2 = (D2<keep_prob).astype(int)                   # Step 2: convert entries of D2 to 0 or 1 (using keep_prob as the threshold)
-    A2 = np.multiply(A2,D2)                                    # Step 3: shut down some neurons of A2
-    A2 /= keep_prob                                 # Step 4: scale the value of neurons that haven't been shut down
+    D2 = np.random.rand(A2.shape[0], A2.shape[1])                                         # Step 1: initialize matrix D2 = np.random.rand(..., ...)
+    D2 = D2 < keep_prob                                         # Step 2: convert entries of D2 to 0 or 1 (using keep_prob as the threshold)
+    A2 = np.multiply(A2, D2)                                         # Step 3: shut down some neurons of A2
+    A2 /= keep_prob                                         # Step 4: scale the value of neurons that haven't been shut down
     ### END CODE HERE ###
     Z3 = np.dot(W3, A2) + b3
     A3 = sigmoid(Z3)
