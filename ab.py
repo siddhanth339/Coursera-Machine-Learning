@@ -18,14 +18,14 @@ def forward_propagation(x, theta):
     """
     
     ### START CODE HERE ### (approx. 1 line)
-    J = theta*x
+    J = np.dot(theta, x)
     ### END CODE HERE ###
     
     return J
-  
+
 x, theta = 2, 4
 J = forward_propagation(x, theta)
-print ("J " + str(J))
+print ("J = " + str(J))
 
 # GRADED FUNCTION: backward_propagation
 
@@ -46,14 +46,14 @@ def backward_propagation(x, theta):
     ### END CODE HERE ###
     
     return dtheta
-  
+
 x, theta = 2, 4
 dtheta = backward_propagation(x, theta)
 print ("dtheta = " + str(dtheta))
 
 # GRADED FUNCTION: gradient_check
 
-def gradient_check(x, theta, epsilon = 1e-7):
+def gradient_check(x, theta, epsilon=1e-7):
     """
     Implement the backward propagation presented in Figure 1.
     
@@ -68,11 +68,11 @@ def gradient_check(x, theta, epsilon = 1e-7):
     
     # Compute gradapprox using left side of formula (1). epsilon is small enough, you don't need to worry about the limit.
     ### START CODE HERE ### (approx. 5 lines)
-    thetaplus = theta+epsilon                               # Step 1
-    thetaminus = theta-epsilon                              # Step 2
-    J_plus = forward_propagation(x, thetaplus)                                  # Step 3
+    thetaplus = theta + epsilon                               # Step 1
+    thetaminus = theta - epsilon                              # Step 2
+    J_plus = forward_propagation(x, thetaplus)                # Step 3
     J_minus = forward_propagation(x, thetaminus)              # Step 4
-    gradapprox =  (J_plus-J_minus)/(2*epsilon)                            # Step 5
+    gradapprox = (J_plus - J_minus) / (2 * epsilon)           # Step 5
     ### END CODE HERE ###
     
     # Check if gradapprox is close enough to the output of backward_propagation()
@@ -81,18 +81,18 @@ def gradient_check(x, theta, epsilon = 1e-7):
     ### END CODE HERE ###
     
     ### START CODE HERE ### (approx. 1 line)
-    numerator = np.linalg.norm(grad-gradapprox)                               # Step 1'
-    denominator = np.linalg.norm(grad)+np.linalg.norm(gradapprox)                      # Step 2'
-    difference = numerator/denominator                             # Step 3'
+    numerator = np.linalg.norm(grad - gradapprox)                      # Step 1'
+    denominator = np.linalg.norm(grad) + np.linalg.norm(gradapprox)    # Step 2'
+    difference = numerator / denominator                               # Step 3'
     ### END CODE HERE ###
     
     if difference < 1e-7:
-        print ("The gradient is correct!")
+        print("The gradient is correct!")
     else:
-        print ("The gradient is wrong!")
+        print("The gradient is wrong!")
     
     return difference
-  
+
 x, theta = 2, 4
 difference = gradient_check(x, theta)
 print("difference = " + str(difference))
@@ -134,13 +134,13 @@ def forward_propagation_n(X, Y, parameters):
     A3 = sigmoid(Z3)
 
     # Cost
-    logprobs = np.multiply(-np.log(A3),Y) + np.multiply(-np.log(1 - A3), 1 - Y)
-    cost = 1./m * np.sum(logprobs)
+    logprobs = np.multiply(-np.log(A3), Y) + np.multiply(-np.log(1 - A3), 1 - Y)
+    cost = 1. / m * np.sum(logprobs)
     
     cache = (Z1, A1, W1, b1, Z2, A2, W2, b2, Z3, A3, W3, b3)
     
     return cost, cache
- 
+
 def backward_propagation_n(X, Y, cache):
     """
     Implement the backward propagation presented in figure 2.
@@ -158,28 +158,28 @@ def backward_propagation_n(X, Y, cache):
     (Z1, A1, W1, b1, Z2, A2, W2, b2, Z3, A3, W3, b3) = cache
     
     dZ3 = A3 - Y
-    dW3 = 1./m * np.dot(dZ3, A2.T)
-    db3 = 1./m * np.sum(dZ3, axis=1, keepdims = True)
+    dW3 = 1. / m * np.dot(dZ3, A2.T)
+    db3 = 1. / m * np.sum(dZ3, axis=1, keepdims=True)
     
     dA2 = np.dot(W3.T, dZ3)
     dZ2 = np.multiply(dA2, np.int64(A2 > 0))
-    dW2 = 1./m * np.dot(dZ2, A1.T)
-    db2 = 1./m * np.sum(dZ2, axis=1, keepdims = True)
+    dW2 = 1. / m * np.dot(dZ2, A1.T) * 2  # Should not multiply by 2
+    db2 = 1. / m * np.sum(dZ2, axis=1, keepdims=True)
     
     dA1 = np.dot(W2.T, dZ2)
     dZ1 = np.multiply(dA1, np.int64(A1 > 0))
-    dW1 = 1./m * np.dot(dZ1, X.T)
-    db1 = 1./m * np.sum(dZ1, axis=1, keepdims = True)
+    dW1 = 1. / m * np.dot(dZ1, X.T)
+    db1 = 4. / m * np.sum(dZ1, axis=1, keepdims=True) # Should not multiply by 4
     
     gradients = {"dZ3": dZ3, "dW3": dW3, "db3": db3,
                  "dA2": dA2, "dZ2": dZ2, "dW2": dW2, "db2": db2,
                  "dA1": dA1, "dZ1": dZ1, "dW1": dW1, "db1": db1}
     
     return gradients
-  
+
 # GRADED FUNCTION: gradient_check_n
 
-def gradient_check_n(parameters, gradients, X, Y, epsilon = 1e-7):
+def gradient_check_n(parameters, gradients, X, Y, epsilon=1e-7):
     """
     Checks if backward_propagation_n computes correctly the gradient of the cost output by forward_propagation_n
     
@@ -201,43 +201,45 @@ def gradient_check_n(parameters, gradients, X, Y, epsilon = 1e-7):
     J_plus = np.zeros((num_parameters, 1))
     J_minus = np.zeros((num_parameters, 1))
     gradapprox = np.zeros((num_parameters, 1))
+    
     # Compute gradapprox
     for i in range(num_parameters):
         
         # Compute J_plus[i]. Inputs: "parameters_values, epsilon". Output = "J_plus[i]".
         # "_" is used because the function you have to outputs two parameters but we only care about the first one
         ### START CODE HERE ### (approx. 3 lines)
-        thetaplus = np.copy(parameters_values)                                      # Step 1
-        thetaplus[i][0] = thetaplus[i][0] + epsilon                                 # Step 2
-        J_plus[i], _ =  forward_propagation_n(X, Y, vector_to_dictionary(thetaplus))# Step 3
+        thetaplus =  np.copy(parameters_values)                                       # Step 1
+        thetaplus[i][0] = thetaplus[i][0] + epsilon                                   # Step 2
+        J_plus[i], _ =  forward_propagation_n(X, Y, vector_to_dictionary(thetaplus))  # Step 3
         ### END CODE HERE ###
         
         # Compute J_minus[i]. Inputs: "parameters_values, epsilon". Output = "J_minus[i]".
         ### START CODE HERE ### (approx. 3 lines)
-        thetaminus = np.copy(parameters_values)        # Step 1
-        thetaminus[i][0] = thetaminus[i][0] -epsilon                     # Step 2        
-        J_minus[i], _ = forward_propagation_n(X, Y, vector_to_dictionary(thetaminus)) #step3
+        thetaminus = np.copy(parameters_values)                                       # Step 1
+        thetaminus[i][0] = thetaminus[i][0] - epsilon                                 # Step 2        
+        J_minus[i], _ = forward_propagation_n(X, Y, vector_to_dictionary(thetaminus)) # Step 3
         ### END CODE HERE ###
         
         # Compute gradapprox[i]
         ### START CODE HERE ### (approx. 1 line)
-        gradapprox[i] = (J_plus[i] - J_minus[i])/(2*epsilon)
+        gradapprox[i] = (J_plus[i] - J_minus[i]) / (2 * epsilon)
         ### END CODE HERE ###
     
     # Compare gradapprox to backward propagation gradients by computing difference.
     ### START CODE HERE ### (approx. 1 line)
-    numerator = np.linalg.norm(grad-gradapprox)                 # Step 1'
-    denominator = np.linalg.norm(gradapprox)+np.linalg.norm(grad)    # Step 2'
-    difference = numerator/denominator                                        # Step 3'
+    numerator = np.linalg.norm(grad - gradapprox)                                     # Step 1'
+    denominator = np.linalg.norm(grad) + np.linalg.norm(gradapprox)                   # Step 2'
+    difference = numerator / denominator                                              # Step 3'
     ### END CODE HERE ###
 
-    if difference > 2e-7:
-        print ("\033[93m" + "There is a mistake in the backward propagation! difference = " + str(difference) + "\033[0m")
+    if difference > 1e-7:
+        print("\033[93m" + "There is a mistake in the backward propagation! difference = " + str(difference) + "\033[0m")
     else:
-        print ("\033[92m" + "Your backward propagation works perfectly fine! difference = " + str(difference) + "\033[0m")
+        print("\033[92m" + "Your backward propagation works perfectly fine! difference = " + str(difference) + "\033[0m")
     
     return difference
-  
+
+
 X, Y, parameters = gradient_check_n_test_case()
 
 cost, cache = forward_propagation_n(X, Y, parameters)
